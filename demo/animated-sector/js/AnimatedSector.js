@@ -15,18 +15,18 @@
 
 L.AnimatedSector = L.Circle.extend({
 
-    options: {
-        pixelRadius: true,
+	options: {
+		pixelRadius: true,
 		fill: true,
-		fillColor: '#ffff00',
-        fillOpacity: 0.2,
+		fillColor: '#004CB3',
+		fillOpacity: 0.2,
 		fillGradient: true,
 		border: 0,
 		borderColor: '#dddddd',
 		borderDashLine: false,
-        directionAngle: 0,
-        viewAngleRange: 140,
-    },
+		directionAngle: 0,
+		viewAngleRange: 140,
+	},
 	
 	initialize: function(latlng, options, legacyOptions) {
 		L.Circle.prototype.initialize.call(this, latlng, options, legacyOptions);
@@ -34,9 +34,9 @@ L.AnimatedSector = L.Circle.extend({
 		this._timer_pendulum = null;
 	},
 
-    _updatePath: function () {
-        this._renderer._updateSector(this);
-    },
+	_updatePath: function () {
+		this._renderer._updateSector(this);
+	},
 
 	pendulum: function(step, minAngle, maxAngle, interval) {
 		if ( this._timer_pendulum !== null ) {
@@ -44,16 +44,16 @@ L.AnimatedSector = L.Circle.extend({
 		}
 
 		var angle = this.options.directionAngle;
-        var trend = 1;
+		var trend = 1;
 		var self = this;
-        this._timer_pendulum = setInterval(function() {
-            if (angle >= maxAngle) trend = -1;
-            if (angle <= minAngle) trend = 1;
-            angle +=  trend * step;
-            self.setStyle({
-                directionAngle: angle
-            });
-        }, (interval || 200));
+		this._timer_pendulum = setInterval(function() {
+			if (angle >= maxAngle) trend = -1;
+			if (angle <= minAngle) trend = 1;
+			angle +=  trend * step;
+			self.setStyle({
+				directionAngle: angle
+			});
+		}, (interval || 200));
 	},
 
 	stopPendulum: function() {
@@ -63,7 +63,7 @@ L.AnimatedSector = L.Circle.extend({
 	},
 
 	spin: function(step, interval) {
-		this.pendulum(step, this.options.directionAngle, this.options.directionAngle * 100000, interval);
+		this.pendulum(step, this.options.directionAngle, Number.MAX_VALUE, interval);
 	},
 
 	stopSpin: function() {
@@ -73,23 +73,26 @@ L.AnimatedSector = L.Circle.extend({
 });
 
 L.Canvas.prototype._updateSector = function(layer) {
-    if (!this._drawing || layer._empty()) { return; }
+	if (!this._drawing || layer._empty()) { return; }
 
-    var p = layer._point;
-    var ctx = this._ctx;
-    var ops = layer.options;
-	var r = Math.round(layer._radius);
+	var p = layer._point;
+	var ctx = this._ctx;
+	var ops = layer.options;
+	var r = Math.max(Math.round(layer._radius), 1);
+	var s = (Math.max(Math.round(layer._radiusY), 1) || r) / r;
 
-    this._drawnLayers[layer._leaflet_id] = layer;
+	this._drawnLayers[layer._leaflet_id] = layer;
 
-    ctx.save();
-    ctx.beginPath();
-    ctx.translate(p.x, p.y);
-    ctx.moveTo(0, 0);
-    ctx.arc(0, 0, r,
-        -(ops.directionAngle - ops.viewAngleRange / 2.0) * Math.PI / 180,
-        -(ops.directionAngle + ops.viewAngleRange / 2.0) * Math.PI / 180, true);
-    ctx.closePath();
+	ctx.save();
+	if (s !== 1) ctx.scale(1, s);	// must take the Projection into account
+
+	ctx.beginPath();
+	ctx.translate(p.x, p.y / s);
+	ctx.moveTo(0, 0);
+	ctx.arc(0, 0, r,
+		-(ops.directionAngle - ops.viewAngleRange / 2.0) * Math.PI / 180,
+		-(ops.directionAngle + ops.viewAngleRange / 2.0) * Math.PI / 180, true);
+	ctx.closePath();
 
 	if (ops.fill) {
 		if (ops.fillGradient) {
@@ -113,12 +116,16 @@ L.Canvas.prototype._updateSector = function(layer) {
 		ctx.stroke();
 	}
 
-    ctx.restore();
+	ctx.restore();
 	return ctx;
 }
 
 L.animatedSector = function (latlng, options, legacyOptions){
-    return new L.AnimatedSector(latlng, options, legacyOptions);
+	return new L.AnimatedSector(latlng, options, legacyOptions);
+};
+
+L.sector = function (latlng, options, legacyOptions){
+	return new L.AnimatedSector(latlng, options, legacyOptions);
 };
 
 
