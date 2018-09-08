@@ -1,0 +1,115 @@
+<html>
+<head>
+	<title>Leaflet.js Animated Sector Test 1</title>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta HTTP-EQUIV="Pragma" CONTENT="no-cache"> 
+	<meta HTTP-EQUIV="Cache-Control" CONTENT="no-cache"> 
+	<meta HTTP-EQUIV="Expires" CONTENT="0"> 
+ 
+	<!-- import Leaflet -->
+    <link rel="stylesheet" 
+		href="https://unpkg.com/leaflet@1.3.4/dist/leaflet.css" 
+		integrity="sha512-puBpdR0798OZvTTbP4A8Ix/l+A4dHDD0DGqYW6RQ+9jxkRFclaxxQb/SJAWZfWAkuyeQUytO7+7N4QKrDh+drA==" 
+		crossorigin=""/>
+    <script src="https://unpkg.com/leaflet@1.3.4/dist/leaflet.js" 
+		integrity="sha512-nMMmRyTVoLYqjP9hrbed9S+FzjZHW5gY1TWCHA5ckwXZBadntCNs8kEqAWdrb9O7rxbCaA4lKTIWjDXZxflOcA==" 
+		crossorigin=""></script>
+
+	<script src="./js/AnimatedSector.js"></script>
+<head>
+<body onload="loadMap()">
+	<div id="map" style="width:800px;height:400px;background-color:#ffffff;"></div>
+	<br>
+	<div style='line-height:40px;'>
+		<button onclick="startPendulum()">start pendulum animation</button>
+		<button onclick="stopPendulum()">stop pendulum animation</button> <p>
+		<button onclick="startSpin()">start rotate animation</button>
+		<button onclick="stopSpin()">stop rotate animation</button> <p>
+		<button onclick="resetStyle()">reset sector style</button>
+	</div>
+	<script>
+	var _map = null;
+	var _sector1 = null;
+	var _sector2 = null;
+
+	function loadMap() {
+		_map = L.map('map', {
+			center: [38.557156, 106.577026],
+	        zoom:4,
+	        minZoom: 0,
+	        maxZoom: 21,
+	        markerZoomAnimation: false,
+	        closePopupOnClick: false,
+	        maxBounds: [[-90, -180],[90, 180]],
+	        renderer: L.canvas()
+		});
+
+		L.tileLayer('https://cartodb-basemaps-{s}.global.ssl.fastly.net/dark_all/{z}/{x}/{y}.png', {
+		    attribution: 'cartodb-basemaps',
+	        subdomains: 'abcd',
+			maxZoom: 19
+		}).addTo(_map);
+
+
+		_sector1 = L.animatedSector([30.661057, 104.081757],{
+			radius: 500000,
+			fillColor: '#ff0000',
+			fillOpacity: 0.6, 
+			directionAngle: 90,
+			viewAngleRange: 90,
+		}).addTo(_map);	
+
+		_sector2 = L.animatedSector([36.923615, 114.380943], {
+			radius: 600000,
+			fillColor: '#00ff00',
+			fillOpacity: 0.2,
+			fillGradient: true,
+			directionAngle: 45,
+			viewAngleRange: 140, 
+		}).addTo(_map);
+
+    }
+
+	function resetStyle() {
+		_sector2.setStyle({
+			radius: 400000,
+			fillColor: '#ffff00',
+			fillOpacity: 0.4,
+			fillGradient: true,
+			viewAngleRange:100,
+			border: 2,
+			borderColor: '#ff0000',
+			borderDashLine: true
+		});
+	}
+
+	/**
+	 * AnimatedSector.pendulum(angleStep, minAngle, maxAngle)
+	 *	angleStep: angle changes during every interval
+	 *	minAngle: the minimum angle of pendulum animation
+	 *	maxAngle: the maximum angle of pendulum animation
+	 */
+	function startPendulum() {
+		_sector1.pendulum(4, 30, 150);
+	}
+		
+	function stopPendulum() {
+		_sector1.stopPendulum();
+	}
+
+	/**
+	 * AnimatedSector.spin(angleStep)
+	 *	angleStep: angle changes during every interval
+	 */
+	function startSpin() {
+		_sector2.spin(4);
+	}
+
+	function stopSpin() {
+		_sector2.stopSpin();
+	}
+
+    </script>
+</body>
+</html>
