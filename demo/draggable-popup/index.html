@@ -13,11 +13,6 @@
 <head>
 <body onload="loadMap()">
 	<div id="map" style="width:800px;height:400px;background-color:#ffffff;"></div>
-	<br>
-	<div style='line-height:40px;'>
-		<button onclick="addPolyline()">addPolyline</button>
-		<button onclick="addPatternline()">addPatternline</button>
-	</div>
 	<script>
 	var _map = null;
 	
@@ -44,7 +39,7 @@
 
 	function addPopup(anchorLatLng, options, popupLatLng) {
 		var marker = L.circleMarker(anchorLatLng, {
-			radius: 5
+			radius: 5, color: 'red'
 		}).addTo(_map);
 
 		var popup = L.draggablePopup(options)
@@ -62,7 +57,7 @@
 			.setContent('<p style="color:red">' + anchorLatLng + '</p>');
 
 		var marker = L.circleMarker(anchorLatLng, {
-			radius: 5
+			radius: 5, color: 'red'
 		}).addTo(_map).bindPopup(popup);
 	}
 
