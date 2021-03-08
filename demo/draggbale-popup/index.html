@@ -1,0 +1,72 @@
+<html>
+<head>
+	<title>Leaflet.js Anchor Popup Demo-1</title>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta HTTP-EQUIV="Pragma" CONTENT="no-cache"> 
+	<meta HTTP-EQUIV="Cache-Control" CONTENT="no-cache"> 
+	<meta HTTP-EQUIV="Expires" CONTENT="0"> 
+	<!-- import Leaflet -->
+	<link href="https://cdn.bootcdn.net/ajax/libs/leaflet/1.7.1/leaflet.css" rel="stylesheet">
+	<script src="https://cdn.bootcdn.net/ajax/libs/leaflet/1.7.1/leaflet.js"></script>
+	<script src="./src/DraggablePopup.js"></script>
+<head>
+<body onload="loadMap()">
+	<div id="map" style="width:800px;height:400px;background-color:#ffffff;"></div>
+	<br>
+	<div style='line-height:40px;'>
+		<button onclick="addPolyline()">addPolyline</button>
+		<button onclick="addPatternline()">addPatternline</button>
+	</div>
+	<script>
+	var _map = null;
+	
+	function loadMap() {
+		_map = L.map('map', {
+			center: [30.557156, 110.577026],
+	        zoom:5,
+	        minZoom: 0,
+	        maxZoom: 21,
+			zoomAnimation: true,
+	        closePopupOnClick: false,
+	        maxBounds: [[-90, -180],[90, 180]],
+	        renderer: L.canvas()
+		});
+
+		L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+			    attribution: '&copy; <a href="https://www.arcgisonline.com">ESRI ArcGIS</a> Contributors'
+		}).addTo(_map);
+
+		addPopup(L.latLng(30.661057, 104.081757),  {'closeButton':'true'}, L.latLng(34, 100));
+		addPopup(L.latLng(32.047615, 118.772781),  {'backgroundColor':'#8ac4d0'});
+		bindPopup(L.latLng(34.668041, 112.424797), {'backgroundColor':'#fce38a', 'closeButton':'true'});
+    }
+
+	function addPopup(anchorLatLng, options, popupLatLng) {
+		var marker = L.circleMarker(anchorLatLng, {
+			radius: 5
+		}).addTo(_map);
+
+		var popup = L.draggablePopup(options)
+			.setAnchorLatLng(anchorLatLng)
+			.setPopupLatLng(popupLatLng ? popupLatLng : anchorLatLng)
+			.setContent('<p style="color:red">' + anchorLatLng + '</p>')
+			.addTo(_map);
+	}
+
+	function bindPopup(anchorLatLng, options, popupLatLng) {
+
+		var popup = L.draggablePopup(options)
+			.setAnchorLatLng(anchorLatLng)
+			.setPopupLatLng(popupLatLng ? popupLatLng : anchorLatLng)
+			.setContent('<p style="color:red">' + anchorLatLng + '</p>');
+
+		var marker = L.circleMarker(anchorLatLng, {
+			radius: 5
+		}).addTo(_map).bindPopup(popup);
+	}
+
+
+    </script>
+</body>
+</html>
